@@ -1,4 +1,4 @@
-/*global module,require*/
+/*global module, require*/
 
 var zwave = { _ons: Object.create(null), devices: Object.create(null), _started: false, _state: 'Normal' };
 
@@ -106,16 +106,16 @@ _zwave.on('node naming', function(nodeid, nodeinfo) {
 
     zwave.addDevice(nodeid, nodeinfo);
 });
-_zwave.on('value added', function(nodeid, commandclass, value){
+_zwave.on('value added', function(nodeid, commandclass, value) {
     console.log('LOG', 'value added', nodeid, commandclass, value);
 
     zwave.addValue(nodeid, value);
 });
-_zwave.on('value changed', function(nodeid, commandclass, value){
+_zwave.on('value changed', function(nodeid, commandclass, value) {
     console.log('LOG', 'value changed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
-_zwave.on('value refreshed', function(nodeid, commandclass, value){
+_zwave.on('value refreshed', function(nodeid, commandclass, value) {
     console.log('LOG', 'value refreshed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
@@ -144,7 +144,55 @@ zwave.stop = function()
     if (!this._started)
         return;
     _zwave.disconnect();
-    this._started = false;
+    this.started = false;
 };
+
+var events = [
+    "Type_ValueAdded",
+    "Type_ValueRemoved",
+    "Type_ValueChanged",
+    "Type_ValueRefreshed",
+    "Type_Group",
+    "Type_NodeNew",
+    "Type_NodeAdded",
+    "Type_NodeRemoved",
+    "Type_NodeProtocolInfo",
+    "Type_NodeNaming",
+    "Type_NodeEvent",
+    "Type_PollingDisabled",
+    "Type_PollingEnabled",
+    "Type_SceneEvent",
+    "Type_CreateButton",
+    "Type_DeleteButton",
+    "Type_ButtonOn",
+    "Type_ButtonOff",
+    "Type_DriverReady",
+    "Type_DriverFailed",
+    "Type_DriverReset",
+    "Type_EssentialNodeQueriesComplete",
+    "Type_NodeQueriesComplete",
+    "Type_AwakeNodesQueried",
+    "Type_AllNodesQueriedSomeDead",
+    "Type_AllNodesQueried",
+    "Type_Notification",
+    "Type_DriverRemoved",
+    "Type_ControllerCommand",
+    "Type_NodeReset"
+];
+
+events.forEach(function(ev) {
+    var name = ev[5].toLowerCase();
+    for (var i=6; i<ev.length; ++i) {
+        if (ev[i] == ev[i].toUpperCase()) {
+            name += ' ' + ev[i].toLowerCase();
+        } else {
+            name += ev[i];
+        }
+    }
+    _zwave.on(name, function() {
+        console.log('LOG GOT EVENT', name, arguments);
+    });
+    // console.log(ev, name);
+});
 
 module.exports = zwave;
