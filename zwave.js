@@ -97,26 +97,26 @@ zwave.configureController = function(cfg)
 console.log("hello");
 
 _zwave.on('node ready', function(nodeid, nodeinfo) {
-    // console.log('node ready', nodeid, nodeinfo);
+    console.log('LOG', 'node ready', nodeid, nodeinfo);
 
     zwave.addDevice(nodeid, nodeinfo);
 });
 _zwave.on('node naming', function(nodeid, nodeinfo) {
-    // console.log('node naming', nodeid, nodeinfo);
+    console.log('LOG', 'node naming', nodeid, nodeinfo);
 
     zwave.addDevice(nodeid, nodeinfo);
 });
 _zwave.on('value added', function(nodeid, commandclass, value){
-    console.log('value added', nodeid, commandclass, value);
+    console.log('LOG', 'value added', nodeid, commandclass, value);
 
     zwave.addValue(nodeid, value);
 });
 _zwave.on('value changed', function(nodeid, commandclass, value){
-    console.log('value changed', nodeid, commandclass, value);
+    console.log('LOG', 'value changed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
 _zwave.on('value refreshed', function(nodeid, commandclass, value){
-    console.log('value refreshed', nodeid, commandclass, value);
+    console.log('LOG', 'value refreshed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
 _zwave.on('controller command', function(state, err){
@@ -125,11 +125,12 @@ _zwave.on('controller command', function(state, err){
     var errs = ["None", "ButtonNotFound", "NodeNotFound", "NotBridge", "NotSUC", "NotSecondary",
                 "NotPrimary", "IsPrimary", "NotFound", "Busy", "Failed", "Disabled", "Overflow"];
 
+    console.log('LOG', 'state', state);
     zwave._call("stateChanged", states[state], zwave._state, errs[err]);
     zwave._state = states[state];
 });
 _zwave.on('notification', function(nodeid, notif){
-    console.log('notif', nodeid, notif);
+    console.log('LOG', 'notif', nodeid, notif);
 });
 
 zwave.start = function(dev)
