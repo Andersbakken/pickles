@@ -1,9 +1,9 @@
 /*global module,require*/
 
-var zwave = { _ons: Object.create(null), devices: Object.create(null), _started: false, _state: "Normal" };
+var zwave = { _ons: Object.create(null), devices: Object.create(null), _started: false, _state: 'Normal' };
 
-var devs = require("../common/devices");
-var _ozw = require("openzwave-shared");
+var devs = require('./devices');
+var _ozw = require('openzwave-shared');
 var _zwave = new _ozw();
 
 zwave.on = function(name, cb)
@@ -107,16 +107,16 @@ _zwave.on('node naming', function(nodeid, nodeinfo) {
     zwave.addDevice(nodeid, nodeinfo);
 });
 _zwave.on('value added', function(nodeid, commandclass, value){
-    // console.log('value added', nodeid, commandclass, value);
+    console.log('value added', nodeid, commandclass, value);
 
     zwave.addValue(nodeid, value);
 });
 _zwave.on('value changed', function(nodeid, commandclass, value){
-    //console.log('value changed', nodeid, commandclass, value);
+    console.log('value changed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
 _zwave.on('value refreshed', function(nodeid, commandclass, value){
-    //console.log('value refreshed', nodeid, commandclass, value);
+    console.log('value refreshed', nodeid, commandclass, value);
     zwave.updateValue(value);
 });
 _zwave.on('controller command', function(state, err){
@@ -134,7 +134,7 @@ _zwave.on('notification', function(nodeid, notif){
 
 zwave.start = function()
 {
-    _zwave.connect('/dev/ttyAMA0');
+    _zwave.connect('/dev/ttyAMC0');
     this._started = true;
 };
 
