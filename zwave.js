@@ -132,9 +132,9 @@ _zwave.on('notification', function(nodeid, notif){
     console.log('notif', nodeid, notif);
 });
 
-zwave.start = function()
+zwave.start = function(dev)
 {
-    _zwave.connect('/dev/ttyAMC0');
+    _zwave.connect(dev || '/dev/ttyACM0');
     this._started = true;
 };
 

@@ -5,5 +5,5 @@
 
 console.log("STARTING");
 var zwave = require('./zwave');
-zwave.start();
+zwave.start("/dev/ttyACM0");
 console.log("STARTED");
