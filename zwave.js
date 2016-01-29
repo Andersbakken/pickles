@@ -143,6 +143,7 @@ zwave.stop = function()
     if (!this._started)
         return;
     _zwave.disconnect();
+    this._started = false;
 };
 
 module.exports = zwave;
