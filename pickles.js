@@ -54,9 +54,9 @@ events.forEach(function(ev) {
             name += ev[i];
         }
     }
-    _zwave.on(name, function() {
-        console.log('LOG GOT EVENT', name, arguments);
-    });
+    // instance.on(name, function() {
+    //     console.log('LOG GOT EVENT', name, arguments);
+    // });
     // console.log(ev, name);
 });
 
