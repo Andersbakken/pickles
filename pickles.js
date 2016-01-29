@@ -1,66 +1,52 @@
 #!/usr/bin/env node
-/*global require */
+/*global require, __dirname, clearTimeout, setTimeout, process */
 
 'use strict';
 
-console.log("STARTING");
+var start = Date.now();
+
+function currentTime()
+{
+    return Date.now() - start;
+}
+
+var Mixer = require('./Mixer');
+var mixer = new Mixer();
+
+var open = __dirname + "/data/open.mp3";
+var close = __dirname + "/data/close.mp3";
+
+// setTimeout(function() {
+//     mixer.play(open, function() {
+//         mixer.play(close, function() {
+//             process.exit();
+//         });
+//     });
+//     mixer.play(open);
+// }, 1000);
 
 var openzwave = require('openzwave-shared');
 var instance = new openzwave();
 instance.connect("/dev/ttyACM0");
+var lastValue;
+var timer;
 instance.on("node event", function(nodeId, value) {
-    console.log("GOT NODE EVENT", value);
-});
-
-var events = [
-    "Type_ValueAdded",
-    "Type_ValueRemoved",
-    "Type_ValueChanged",
-    "Type_ValueRefreshed",
-    "Type_Group",
-    "Type_NodeNew",
-    "Type_NodeAdded",
-    "Type_NodeRemoved",
-    "Type_NodeProtocolInfo",
-    "Type_NodeNaming",
-    "Type_NodeEvent",
-    "Type_PollingDisabled",
-    "Type_PollingEnabled",
-    "Type_SceneEvent",
-    "Type_CreateButton",
-    "Type_DeleteButton",
-    "Type_ButtonOn",
-    "Type_ButtonOff",
-    "Type_DriverReady",
-    "Type_DriverFailed",
-    "Type_DriverReset",
-    "Type_EssentialNodeQueriesComplete",
-    "Type_NodeQueriesComplete",
-    "Type_AwakeNodesQueried",
-    "Type_AllNodesQueriedSomeDead",
-    "Type_AllNodesQueried",
-    "Type_Notification",
-    "Type_DriverRemoved",
-    "Type_ControllerCommand",
-    "Type_NodeReset"
-];
-
-events.forEach(function(ev) {
-    var name = ev[5].toLowerCase();
-    for (var i=6; i<ev.length; ++i) {
-        if (ev[i] == ev[i].toUpperCase()) {
-            name += ' ' + ev[i].toLowerCase();
-        } else {
-            name += ev[i];
+    console.log(currentTime(), "GOT EVENT", value);
+    if (timer)
+        clearTimeout(timer);
+    lastValue = value;
+    timer = setTimeout(function() {
+        console.log(currentTime(), "STARTING PLAYBACK", lastValue);
+        switch (lastValue) {
+        case 255:
+            mixer.play(open);
+            break;
+        case 0:
+            mixer.play(close);
+            break;
+        default:
+            console.error(currentTime(), "Unhandled value", value);
+            break;
         }
-    }
-    // instance.on(name, function() {
-    //     console.log('LOG GOT EVENT', name, arguments);
-    // });
-    // console.log(ev, name);
+    }, 100);
 });
-
-
-// var zwave = require('./zwave');
-// zwave.start("/dev/ttyACM0");
-// console.log("STARTED");
