@@ -5,9 +5,10 @@
 
 console.log("STARTING");
 
-var openzwave = new require('openzwave-shared');
-openzwave.connect("/dev/ttyACM0");
-openzwave.on("node event", function(nodeId, value) {
+var openzwave = require('openzwave-shared');
+var instance = new openzwave();
+instance.connect("/dev/ttyACM0");
+instance.on("node event", function(nodeId, value) {
     console.log("GOT NODE EVENT", value);
 });
 
