@@ -126,13 +126,12 @@ app.get('/configure', function(req, res) {
     delete appData.host;
 });
 
-
 app.post('/update', function(req, res) {
     for (let key in req.body) {
         appData[key] = req.body[key];
     }
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
-    res.send("<html><head><title>Rebooting</title></head><body><h1>Rebotting in 5 seconds... </h1></body></html>");
+    res.send(loadHtml("/data/reboot.html"));
     var exec = require('child_process').exec;
     setTimeout(function() {
         exec('shutdown -r now');
