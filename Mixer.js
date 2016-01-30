@@ -12,26 +12,10 @@ function currentTime()
     return Date.now() - start;
 }
 
-// function play(file, finished)
-// {
-//     fs.createReadStream(file)
-//         .pipe(new lame.Decoder())
-//     .on('format', function (format) {
-//         var speaker = new Speaker(format);
-//         speaker.on("close", function() {
-//             console.log(currentTime(), "got close");
-//             finished();
-//         });
-//         this.pipe(speaker);
-//     });
-// }
-
 function Mixer()
 {
     this.queue = [];
     this.playing = undefined;
-    this.speaker = undefined;
-    this.format = undefined;
 }
 
 Mixer.prototype.play = function(file, callback) {
@@ -51,22 +35,18 @@ Mixer.prototype._playNext = function() {
     fs.createReadStream(this.playing.file)
         .pipe(new lame.Decoder())
         .on('format', function(format) {
-            console.log(currentTime(), "loaded format", file.file);
-            if (!that.speaker) {
-                that.format = format;
-                that.speaker = new Speaker(format);
-                speaker.on("close", function() {
-                    var file = that.playing.file;
-                    console.log(currentTime(), "playback of", file, "finished, queue length", that.queue.length);
-                    var cb = that.playing.callback;
-                    that.playing = undefined;
-                    if (that.queue.length > 0)
-                        that._playNext();
-                    if (cb)
-                        cb(file);
-                });
-            }
-            assert(format == that.format);
+            console.log(currentTime(), "loaded format", that.playing.file);
+            var speaker = new Speaker(format);
+            speaker.on("close", function() {
+                var file = that.playing.file;
+                console.log(currentTime(), "playback of", file, "finished, queue length", that.queue.length);
+                var cb = that.playing.callback;
+                that.playing = undefined;
+                if (that.queue.length > 0)
+                    that._playNext();
+                if (cb)
+                    cb(file);
+            });
             this.pipe(speaker);
         });
 };
