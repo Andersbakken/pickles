@@ -29,7 +29,6 @@ var app = express();
 app.use('/js', express.static('./data/js'));
 app.use('/css', express.static('./data/css'));
 app.use('/fonts', express.static('./data/fonts'));
-app.use('/update.html', express.static('./data/update.html'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json", "utf-8")) || {};
@@ -133,7 +132,7 @@ app.post('/update', function(req, res) {
         appData[key] = req.body[key];
     }
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
-    res.redirect("/update.html");
+    res.send("<html><head><title>Rebooting</title></head><body><h1>Rebotting in 5 seconds... </h1></body></html>");
     setTimeout(function() {
         require('reboot').reboot();
         setTimeout(function() {
