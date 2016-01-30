@@ -133,10 +133,11 @@ app.post('/update', function(req, res) {
     }
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
     res.send("<html><head><title>Rebooting</title></head><body><h1>Rebotting in 5 seconds... </h1></body></html>");
+    var exec = require('child_process').exec;
     setTimeout(function() {
-        require('reboot').reboot();
+        exec('shutdown -r now');
         setTimeout(function() {
-            require('reboot').rebootImmediately();
+            exec('shutdown -r now');
         }, 5000);
     }, 5000);
 
