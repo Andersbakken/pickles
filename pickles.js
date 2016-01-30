@@ -120,7 +120,10 @@ app.post('/update', function(req, res) {
         appData[key] = req.body[key];
     }
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
-    res.redirect("/");
+    res.redirect("/update.html");
+    setTimeout(function() {
+        require('reboot').reboot();
+    }, 5000);
 });
 
 app.listen(80, function () {
