@@ -17,19 +17,19 @@
 
 'use strict';
 
-var start = Date.now();
-var safe = require('safety-dance');
+var safe = require('safetydance');
+var Pushover = require('./Pushover');
+var log = require('./Log').log;
+var error = require('./Log').error;
 
-function currentTime()
-{
-    return Date.now() - start;
-}
-
-var Mixer = require('./Mixer');
-var mixer = new Mixer();
-
-var open = __dirname + "/data/open.mp3";
-var close = __dirname + "/data/close.mp3";
+var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json")) || {};
+log("APPDATA", appData);
+if (!appData.title)
+    appData.title = "Brage-varsel";
+if (!appData.openMessage)
+    appData.openMessage = "Døren ble åpnet";
+if (!appData.closeMessage)
+    appData.closeMessage = "Døren ble lukked";
 
 var openzwave = require('openzwave-shared');
 var instance = new openzwave();
@@ -37,27 +37,35 @@ instance.connect("/dev/ttyACM0");
 var timer;
 var closed;
 instance.on("node event", function(nodeId, value) {
-    console.log(currentTime(), "GOT EVENT", value);
+    log("GOT EVENT", value);
     if (timer)
         clearTimeout(timer);
     timer = setTimeout(function() {
+        function sendNotification() {
+            if (appData.applicationToken && appData.userKey) {
+                Pushover.send({ applicationToken: appData.applicationToken,
+                                userKey: appData.userKey,
+                                title: appData.openMessage,
+                                message: appData.closeMessage + new Date() });
+            }
+        }
         switch (value) {
         case 255:
             if (closed == undefined || closed) {
                 closed = false;
-                console.log(currentTime(), "STARTING PLAYBACK", closed);
-                mixer.play(open);
+                log("Door was opened");
+                sendNotification();
             }
             break;
         case 0:
             if (!closed) {
                 closed = true;
-                console.log(currentTime(), "STARTING PLAYBACK", closed);
-                mixer.play(close);
+                log("Door was closed");
+                sendNotification();
             }
             break;
         default:
-            console.error(currentTime(), "Unhandled value", value);
+            error("Unhandled value", value);
             break;
         }
     }, 100);
