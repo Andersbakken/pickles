@@ -1,17 +1,52 @@
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>%TITLE%</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>w
   </head>
   <body>
-    <form method="POST" action="/update">
-      Title: <input type="text" name="title" value="%TITLE%"/><br/>
-      Open message: <input type="text" name="openMessage" value="%OPENMESSAGE%"/><br/>
-      Close message: <input type="text" name="closeMessage" value="%CLOSEMESSAGE%"/><br/>
-      SSID: <input type="text" name="ssid" value="%SSID%"/><br/>
-      WiFi password: <input type="text" name="wifiPassword" value="%WIFIPASSWORD%"/><br/>
-      Active: <input type="text" name="active" value="%ACTIVE%"/><br/>
-      Users: <textarea type="text" name="userKeys">%USERKEYS%</textarea><br/>
-      <input type="submit" value="Update"/>
-    </form>
+    <a href="/configure">Configure Z-Wave</a><br/>
+    <div class="container">
+      <form role="form" style="margin:5px;" action="/update" method="post">
+        <div class="form-group">
+          <label for="applicationToken">Application Token:</label>
+          <input type="text" class="form-control" id="applicationToken" name="applicationToken" value="%APPLICATIONTOKEN%">
+        </div>
+        <div class="form-group">
+          <label for="users">Users:</label>
+          <textArea class="form-control" id="userKeys" name="userKeys">%USERKEYS%</textArea>
+        </div>
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <input type="text" class="form-control" id="title" name="title" value="%TITLE%">
+        </div>
+        <div class="form-group">
+          <label for="openMessage">Open message:</label>
+          <input type="text" class="form-control" id="openMessage" name="openMessage" value="%OPENMESSAGE%">
+        </div>
+        <div class="form-group">
+          <label for="closeMessage">Close message:</label>
+          <input type="text" class="form-control" id="closeMessage" name="closeMessage" value="%CLOSEMESSAGE%">
+        </div>
+        <div class="form-group">
+          <label for="ssid">SSID:</label>
+          <input type="text" class="form-control" id="ssid" name="ssid" value="%SSID%">
+        </div>
+        <div class="form-group">
+          <label for="WiFi Password">Wifi password:</label>
+          <input type="text" class="form-control" id="WiFi password" name="WiFi password" value="%WIFIPASSWORD%">
+        </div>
+        <div class="form-group">
+          <label for="Active">Active:</label>
+          <input type="text" class="form-control" id="Active" name="Active" value="%ACTIVE%">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
   </body>
 </html>

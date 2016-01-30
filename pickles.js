@@ -23,7 +23,13 @@ var log = require('./Log').log;
 var error = require('./Log').error;
 var express = require('express');
 var assert = require('assert');
+var bodyParser = require('body-parser');
 var app = express();
+
+app.use('/js', express.static('./data/js'));
+app.use('/css', express.static('./data/css'));
+app.use('/fonts', express.static('./data/fonts'));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json")) || {};
 if (!appData.title)
@@ -32,6 +38,10 @@ if (!appData.openMessage)
     appData.openMessage = "Døren ble åpnet";
 if (!appData.closeMessage)
     appData.closeMessage = "Døren ble lukked";
+if (!appData.start)
+    appData.start = "19:00";
+if (!appData.end)
+    appData.end = "06:30";
 log("APPDATA", appData);
 
 var openzwave;
@@ -65,7 +75,7 @@ if (process.argv[2] != '--no-zwave') {
                     closed = false;
                     log("Door was opened");
                     sendNotification();
-                }
+          xs      }
                 break;
             case 0:
                 if (!closed) {
@@ -98,10 +108,19 @@ function loadHtml() {
     }
     return data;
 }
+
 app.get('/', function(req, res) {
     res.send(loadHtml());
 });
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+app.post('/update', function(req, res) {
+    for (let key in req.body) {
+        appData[key] = req.body[key];
+    }
+    safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
+    res.redirect("/");
+});
+
+app.listen(80, function () {
+    console.log('Example app listening on port 80!');
 });
