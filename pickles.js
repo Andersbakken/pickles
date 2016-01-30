@@ -57,8 +57,8 @@ if (process.argv[2] != '--no-zwave') {
                     var hour =  d.getHours();
                     var min = d.getMinutes();
                     var val = (hour * 60) + min;
-                    var startVal = (match[1] * 60) + match[2];
-                    var endVal = (match[3] * 60) + match[4];
+                    var startVal = (parseInt(match[1]) * 60) + parseInt(match[2]);
+                    var endVal = (parseInt(match[3]) * 60) + parseInt(match[4]);
                     if (startVal > endVal)
                         endVal += (24 * 60);
                     if (val < startVal || val >= endVal) {

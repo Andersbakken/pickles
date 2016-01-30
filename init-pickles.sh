@@ -18,10 +18,6 @@ pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"
 stderr_log="/var/log/$name.err"
 
-pushd "$dir"
-sudo su -u pi "git pull >>$stdout_log 2>> $stderr_log"
-popd
-
 trim_file() {
     if [ -e "$1" ]; then
         tail -n 100000 "$1" > /tmp/logfile.tmp
@@ -42,11 +38,13 @@ is_running() {
 
 case "$1" in
     start)
+        sudo tzupdate
         if is_running; then
             echo "Already started"
         else
             echo "Starting $name"
             cd "$dir"
+            sudo -u pi "git pull"
             if [ -z "$user" ]; then
                 sudo $cmd >> "$stdout_log" 2>> "$stderr_log" &
             else
