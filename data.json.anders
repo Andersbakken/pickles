@@ -1,13 +1,11 @@
 {
     "applicationToken": "azzYfyEHRxHw19a5uT2NtEC4gsjEnj",
-    "userKeys": "uUaN1n4ff2pia6RGk2KQdSjt2rRZ9x\r\nbikkje",
-    "SSID": "HeiaOddrane",
+    "userKeys": "uUaN1n4ff2pia6RGk2KQdSjt2rRZ9x",
     "wifiPassword": "foobar123",
     "active": "19:00-06:30",
-    "title": "Brage-varsel 3",
+    "title": "Brage-varsel",
     "openMessage": "Døren ble åpnet",
     "closeMessage": "Døren ble lukked",
     "ssid": "HeiaOddrane",
-    "WiFi password": "foobar123",
-    "Active": "19:00-06:30"
+    "device": "/dev/ttyACM0"
 }

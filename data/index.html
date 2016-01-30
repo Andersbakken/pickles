@@ -7,11 +7,11 @@
     <title>%TITLE%</title>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>w
+    <script src="js/bootstrap.min.js"></script>
   </head>
   <body>
-    <a href="/configure">Configure Z-Wave</a><br/>
     <div class="container">
+      <a href="/configure">Configure Z-Wave</a><br/>
       <form role="form" style="margin:5px;" action="/update" method="post">
         <div class="form-group">
           <label for="applicationToken">Application Token:</label>
@@ -34,16 +34,20 @@
           <input type="text" class="form-control" id="closeMessage" name="closeMessage" value="%CLOSEMESSAGE%">
         </div>
         <div class="form-group">
+          <label for="device">Device:</label>
+          <input type="text" class="form-control" id="device" name="device" value="%DEVICE%">
+        </div>
+        <div class="form-group">
           <label for="ssid">SSID:</label>
           <input type="text" class="form-control" id="ssid" name="ssid" value="%SSID%">
         </div>
         <div class="form-group">
           <label for="WiFi Password">Wifi password:</label>
-          <input type="text" class="form-control" id="WiFi password" name="WiFi password" value="%WIFIPASSWORD%">
+          <input type="text" class="form-control" id="wifiPassword" name="wifiPassword" value="%WIFIPASSWORD%">
         </div>
         <div class="form-group">
           <label for="Active">Active:</label>
-          <input type="text" class="form-control" id="Active" name="Active" value="%ACTIVE%">
+          <input type="text" class="form-control" id="active" name="active" value="%ACTIVE%">
         </div>
         <button type="submit" class="btn btn-default">Submit</button>
       </form>

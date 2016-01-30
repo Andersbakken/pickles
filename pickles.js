@@ -31,26 +31,17 @@ app.use('/css', express.static('./data/css'));
 app.use('/fonts', express.static('./data/fonts'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json")) || {};
-if (!appData.title)
-    appData.title = "Brage-varsel";
-if (!appData.openMessage)
-    appData.openMessage = "Døren ble åpnet";
-if (!appData.closeMessage)
-    appData.closeMessage = "Døren ble lukked";
-if (!appData.start)
-    appData.start = "19:00";
-if (!appData.end)
-    appData.end = "06:30";
-log("APPDATA", appData);
+var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json", "utf-8")) || {};
+log("APPDATA", __dirname, appData);
 
+console.log(safe.fs.readFileSync(__dirname + "/data.json", "utf-8"));
 var openzwave;
 var instance;
 
 if (process.argv[2] != '--no-zwave') {
     openzwave = require('openzwave-shared');
     instance = new openzwave();
-    instance.connect("/dev/ttyACM0");
+    instance.connect(appData.device);
     var timer;
     var closed;
 
@@ -60,14 +51,16 @@ if (process.argv[2] != '--no-zwave') {
             clearTimeout(timer);
         timer = setTimeout(function() {
             function sendNotification() {
-                if (appData.applicationToken && appData.userKeys instanceof Array && appData.userKeys.length) {
-                    appData.userKeys.forEach(function(userKey) {
-                        Pushover.send({ applicationToken: appData.applicationToken,
-                                        userKey: userKey,
-                                        title: appData.openMessage,
-                                        message: appData.closeMessage + " " + new Date() });
-                    });
-                }
+                log(appData.applicationToken, appData.userKeys);
+                // if (appData.applicationToken && appData.userKeys) {
+                appData.userKeys.split("\r\n").forEach(function(userKey) {
+                    log("sending to", userKey);
+                    Pushover.send({ applicationToken: appData.applicationToken,
+                                    userKey: userKey,
+                                    title: closed ? appData.closeMessage : appData.openMessage,
+                                    message: (closed ? appData.closeMessage : appData.openMessage) + " " + new Date() });
+                });
+                // }
             }
             switch (value) {
             case 255:
@@ -75,7 +68,7 @@ if (process.argv[2] != '--no-zwave') {
                     closed = false;
                     log("Door was opened");
                     sendNotification();
-          xs      }
+                }
                 break;
             case 0:
                 if (!closed) {
@@ -92,8 +85,8 @@ if (process.argv[2] != '--no-zwave') {
     });
 }
 
-function loadHtml() {
-    var data = safe.fs.readFileSync(__dirname + "/data/index.html", { encoding: 'utf-8' });
+function loadHtml(file) {
+    var data = safe.fs.readFileSync(__dirname + file, { encoding: 'utf-8' });
     assert(data);
     for (var key in appData) {
         var k = '%';
@@ -110,8 +103,17 @@ function loadHtml() {
 }
 
 app.get('/', function(req, res) {
-    res.send(loadHtml());
+    res.send(loadHtml("/data/index.html"));
 });
+
+app.get('/configure', function(req, res) {
+    log(req);
+    appData.host = req.headers.host;
+    instance.disconnect();
+    res.send(loadHtml("/data/redirect.html"));
+    delete appData.host;
+});
+
 
 app.post('/update', function(req, res) {
     for (let key in req.body) {
