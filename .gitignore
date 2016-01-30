@@ -1,3 +1,4 @@
 node_modules
 node_modules_pi/openzwave-shared/OZW_Log.txt
+data.json
 /npm-debug.log
