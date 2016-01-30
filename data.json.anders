@@ -1,4 +1,7 @@
 {
     "applicationToken": "azzYfyEHRxHw19a5uT2NtEC4gsjEnj",
-    "userKeys": [ "uUaN1n4ff2pia6RGk2KQdSjt2rRZ9x" ]
+    "userKeys": [ "uUaN1n4ff2pia6RGk2KQdSjt2rRZ9x", "bikkje" ],
+    "SSID": "HeiaOddrane",
+    "wifiPassword": "foobar123",
+    "active": "19:00-06:30"
 }

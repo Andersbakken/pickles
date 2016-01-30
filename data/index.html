@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <title>%TITLE%</title>
+  </head>
+  <body>
+    <form method="POST" action="/update">
+      Title: <input type="text" name="title" value="%TITLE%"/><br/>
+      Open message: <input type="text" name="openMessage" value="%OPENMESSAGE%"/><br/>
+      Close message: <input type="text" name="closeMessage" value="%CLOSEMESSAGE%"/><br/>
+      SSID: <input type="text" name="ssid" value="%SSID%"/><br/>
+      WiFi password: <input type="text" name="wifiPassword" value="%WIFIPASSWORD%"/><br/>
+      Active: <input type="text" name="active" value="%ACTIVE%"/><br/>
+      Users: <textarea type="text" name="userKeys">%USERKEYS%</textarea><br/>
+      <input type="submit" value="Update"/>
+    </form>
+  </body>
+</html>
