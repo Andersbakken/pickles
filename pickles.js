@@ -29,6 +29,7 @@ var app = express();
 app.use('/js', express.static('./data/js'));
 app.use('/css', express.static('./data/css'));
 app.use('/fonts', express.static('./data/fonts'));
+app.use('/update.html', express.static('./data/update.html'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var appData = safe.JSON.parse(safe.fs.readFileSync(__dirname + "/data.json", "utf-8")) || {};
@@ -123,7 +124,11 @@ app.post('/update', function(req, res) {
     res.redirect("/update.html");
     setTimeout(function() {
         require('reboot').reboot();
+        setTimeout(function() {
+            require('reboot').rebootImmediately();
+        }, 5000);
     }, 5000);
+
 });
 
 app.listen(80, function () {
