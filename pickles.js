@@ -36,17 +36,20 @@ var instance = new openzwave();
 instance.connect("/dev/ttyACM0");
 var timer;
 var closed;
+
 instance.on("node event", function(nodeId, value) {
     log("GOT EVENT", value);
     if (timer)
         clearTimeout(timer);
     timer = setTimeout(function() {
         function sendNotification() {
-            if (appData.applicationToken && appData.userKey) {
-                Pushover.send({ applicationToken: appData.applicationToken,
-                                userKey: appData.userKey,
-                                title: appData.openMessage,
-                                message: appData.closeMessage + new Date() });
+            if (appData.applicationToken && appData.userKeys instanceof Array && appData.userKeys.length) {
+                appData.userKeys.forEach(function(userKey) {
+                    Pushover.send({ applicationToken: appData.applicationToken,
+                                    userKey: userKey,
+                                    title: appData.openMessage,
+                                    message: appData.closeMessage + " " + new Date() });
+                });
             }
         }
         switch (value) {
