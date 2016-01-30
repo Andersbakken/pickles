@@ -52,8 +52,21 @@ if (process.argv[2] != '--no-zwave') {
             clearTimeout(timer);
         timer = setTimeout(function() {
             function sendNotification() {
-                log(appData.applicationToken, appData.userKeys);
-                // if (appData.applicationToken && appData.userKeys) {
+                var match = /([0-9][0-9]?):([0-9][0-9])-([0-9][0-9]?):([0-9][0-9])/.exec(appData.active);
+                if (match) {
+                    var d = new Date();
+                    var hour =  d.getHours();
+                    var min = d.getMinutes();
+                    var val = (hour * 60) + min;
+                    var startVal = (match[1] * 60) + match[2];
+                    var endVal = (match[3] * 60) + match[4];
+                    if (startVal > endVal)
+                        endVal += (24 * 60);
+                    if (val < startVal || val >= endVal) {
+                        log("event outside of active window",  appData.active, d);
+                        return;
+                    }
+                }
                 appData.userKeys.split("\r\n").forEach(function(userKey) {
                     log("sending to", userKey);
                     Pushover.send({ applicationToken: appData.applicationToken,
@@ -61,7 +74,6 @@ if (process.argv[2] != '--no-zwave') {
                                     title: closed ? appData.closeMessage : appData.openMessage,
                                     message: (closed ? appData.closeMessage : appData.openMessage) + " " + new Date() });
                 });
-                // }
             }
             switch (value) {
             case 255:
