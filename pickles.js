@@ -62,7 +62,7 @@ if (process.argv[2] != '--no-zwave') {
                     if (startVal > endVal)
                         endVal += (24 * 60);
                     if (val < startVal || val >= endVal) {
-                        log("event outside of active window",  appData.active, d);
+                        log("event outside of active window",  appData.active, d, hour, min, val, startVal, endVal);
                         return;
                     }
                 }
