@@ -202,11 +202,8 @@ app.post('/update', function(req, res) {
     appData.host = req.headers.host;
     res.send(loadHtml("/data/reboot.html"));
     delete appData.host;
-    setTimeout(function() {
-        reboot();
-        setTimeout(reboot, 5000);
-    }, 5000);
-});
+    reboot();
+    setTimeout(function() { reboot(); }, 5000); });
 
 app.listen(80, function () {
     console.log('Example app listening on port 80!');
