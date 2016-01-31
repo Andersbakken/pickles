@@ -161,15 +161,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/log', function(req, res) {
-    res.type('application/text');
+    res.type('text/plain');
     res.send(safe.fs.readFileSync("/var/log/pickles.log"));
 });
 app.get('/error', function(req, res) {
-    res.type('application/text');
+    res.type('text/plain');
     res.send(safe.fs.readFileSync("/var/log/pickles.err"));
 });
 app.get('/notifications', function(req, res) {
-    res.type('application/text');
+    res.type('text/plain');
     res.send(safe.fs.readFileSync(logFile));
 });
 
