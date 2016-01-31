@@ -215,6 +215,7 @@ app.post('/update', function(req, res) {
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
     rebooting = true;
     res.redirect("/");
+});
 
 app.listen(80, function () {
     console.log('Example app listening on port 80!');
