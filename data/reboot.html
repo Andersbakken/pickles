@@ -7,9 +7,9 @@
           if (++seconds >= 30) {
               window.location = "http://%HOST%/";
           } else if (seconds == 5) {
-              document.getElementById("text").text = "Rebooting...";
+              document.getElementById("text").innerHTML = "Rebooting...";
           } else if (seconds < 5) {
-              document.getElementById("text").text = "Rebooting in " + (5 - seconds) + "seconds...";
+              document.getElementById("text").innerHTML = "Rebooting in " + (5 - seconds) + " seconds...";
           }
       }
       setInterval(update, 1000);
@@ -17,8 +17,6 @@
     <title>Rebooting</title>
   </head>
   <body>
-    <h1 id="text">
-      Rebooting in 5 seconds...
-    </h1>
+    <h1 id="text">Rebooting in 5 seconds...</h1>
   </body>
 </html>
