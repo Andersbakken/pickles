@@ -158,7 +158,9 @@ app.post('/update', function(req, res) {
     safe.fs.writeFileSync("/etc/wpa_supplicant/wpa_supplicant.conf", newContents);
 
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
+    appData.host = req.headers.host;
     res.send(loadHtml("/data/reboot.html"));
+    delete appData.host;
     setTimeout(function() {
         reboot();
         setTimeout(reboot, 5000);
