@@ -47,11 +47,14 @@ function reboot()
 
 var logFile = "/var/log/pickles-notifications.log";
 (function()
-{
-    var lines = safe.fs.readFileSync(logFile, "utf-8").split('\n');
-    if (lines && lines.length > 100000) {
-        lines.splice(0, lines.length - 100000);
-        safe.fs.writeFileSync(logFile, lines.join("\n"));
+ {
+    try {
+        var lines = safe.fs.readFileSync(logFile, "utf-8").split('\n');
+        if (lines && lines.length > 100000) {
+            lines.splice(0, lines.length - 100000);
+            safe.fs.writeFileSync(logFile, lines.join("\n"));
+        }
+    } catch (err) {
     }
 })();
 
