@@ -22,6 +22,7 @@ var Pushover = require('./Pushover');
 var log = require('./Log').log;
 var error = require('./Log').error;
 var express = require('express');
+var exec = require('child_process').exec;
 var assert = require('assert');
 var bodyParser = require('body-parser');
 var app = express();
@@ -126,6 +127,11 @@ app.get('/configure', function(req, res) {
     delete appData.host;
 });
 
+function reboot()
+{
+    exec('shutdown -r now');
+}
+
 app.post('/update', function(req, res) {
     for (let key in req.body) {
         appData[key] = req.body[key];
@@ -145,12 +151,9 @@ app.post('/update', function(req, res) {
 
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
     res.send(loadHtml("/data/reboot.html"));
-    var exec = require('child_process').exec;
     setTimeout(function() {
-        exec('shutdown -r now');
-        setTimeout(function() {
-            exec('shutdown -r now');
-        }, 5000);
+        reboot();
+        setTimeout(reboot, 5000);
     }, 5000);
 });
 
@@ -158,6 +161,15 @@ app.listen(80, function () {
     console.log('Example app listening on port 80!');
 });
 
+var id = setTimeout(reboot, 15000);
+instance.on("driver ready", function() {
+    if (id) {
+        clearTimeout(id);
+        id = undefined;
+    }
+});
+
+/*
 var events = [
     "Type_ValueAdded",
     "Type_ValueRemoved",
@@ -205,3 +217,4 @@ events.forEach(function(ev) {
     });
     // console.log(ev, name);
 });
+*/
