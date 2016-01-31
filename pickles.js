@@ -23,6 +23,7 @@ var log = require('./Log').log;
 var error = require('./Log').error;
 var express = require('express');
 var exec = require('child_process').exec;
+var fs = require('fs');
 var assert = require('assert');
 var bodyParser = require('body-parser');
 var app = express();
@@ -42,6 +43,25 @@ var instance;
 function reboot()
 {
     exec('shutdown -r now');
+}
+
+var logFile = "/var/log/pickles-notifications.log";
+(function()
+{
+    var lines = safe.fs.readFileSync(logFile, "utf-8").split('\n');
+    if (lines && lines.length > 100000) {
+        lines.splice(0, lines.length - 100000);
+        safe.fs.writeFileSync(logFile, lines.join("\n"));
+    }
+})();
+
+function addLog(str)
+{
+    try {
+        fs.appendFile(logFile, str + "\n");
+    } catch (err) {
+        error("Couldn't append to file: " + err.toString());
+    }
 }
 
 if (process.argv[2] != '--no-zwave') {
@@ -65,6 +85,11 @@ if (process.argv[2] != '--no-zwave') {
             clearTimeout(timer);
         timer = setTimeout(function() {
             function sendNotification() {
+                if (closed) {
+                    addLog(new Date() + " door was closed");
+                } else {
+                    addLog(new Date() + " door was opened");
+                }
                 var match = /([0-9][0-9]?):([0-9][0-9])-([0-9][0-9]?):([0-9][0-9])/.exec(appData.active);
                 if (match) {
                     var d = new Date();
@@ -131,6 +156,10 @@ function loadHtml(file) {
 app.get('/', function(req, res) {
     res.send(loadHtml("/data/index.html"));
 });
+
+app.get('/log', function(req, res) { res.send(safe.fs.readFileSync("/var/log/pickles.log")); });
+app.get('/error', function(req, res) { res.send(safe.fs.readFileSync("/var/log/pickles.err")); });
+app.get('/notifications', function(req, res) { res.send(safe.fs.readFileSync(logFile)); });
 
 app.get('/configure', function(req, res) {
     log(req);
