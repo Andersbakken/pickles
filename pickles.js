@@ -39,12 +39,25 @@ console.log(safe.fs.readFileSync(__dirname + "/data.json", "utf-8"));
 var openzwave;
 var instance;
 
+function reboot()
+{
+    exec('shutdown -r now');
+}
+
 if (process.argv[2] != '--no-zwave') {
     openzwave = require('openzwave-shared');
     instance = new openzwave();
     instance.connect(appData.device);
     var timer;
     var closed;
+
+    var id = setTimeout(reboot, 15000);
+    instance.on("driver ready", function() {
+        if (id) {
+            clearTimeout(id);
+            id = undefined;
+        }
+    });
 
     instance.on("node event", function(nodeId, value) {
         log("GOT EVENT", value);
@@ -127,11 +140,6 @@ app.get('/configure', function(req, res) {
     delete appData.host;
 });
 
-function reboot()
-{
-    exec('shutdown -r now');
-}
-
 app.post('/update', function(req, res) {
     for (let key in req.body) {
         appData[key] = req.body[key];
@@ -159,14 +167,6 @@ app.post('/update', function(req, res) {
 
 app.listen(80, function () {
     console.log('Example app listening on port 80!');
-});
-
-var id = setTimeout(reboot, 15000);
-instance.on("driver ready", function() {
-    if (id) {
-        clearTimeout(id);
-        id = undefined;
-    }
 });
 
 /*
