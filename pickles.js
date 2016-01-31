@@ -130,6 +130,19 @@ app.post('/update', function(req, res) {
     for (let key in req.body) {
         appData[key] = req.body[key];
     }
+    var contents = safe.fs.readFileSync("/etc/wpa_supplicant/wpa_supplicant.conf");
+    if (contents)
+        safe.fs.writeFileSync("/etc/wpa_supplicant/wpa_supplicant.conf.bak");
+
+    var newContents = ('ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n' +
+                       'update_config=1\n' +
+                       '\n' +
+                       'network={\n' +
+                       '\tssid="' + appData.ssid + '"\n' +
+                       '\tpsk="' + appData.wifiPassword + '"\n' +
+                       '}\n');
+    safe.fs.writeFileSync("/etc/wpa_supplicant/wpa_supplicant.conf", newContents);
+
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
     res.send(loadHtml("/data/reboot.html"));
     var exec = require('child_process').exec;
@@ -139,9 +152,56 @@ app.post('/update', function(req, res) {
             exec('shutdown -r now');
         }, 5000);
     }, 5000);
-
 });
 
 app.listen(80, function () {
     console.log('Example app listening on port 80!');
+});
+
+var events = [
+    "Type_ValueAdded",
+    "Type_ValueRemoved",
+    "Type_ValueChanged",
+    "Type_ValueRefreshed",
+    "Type_Group",
+    "Type_NodeNew",
+    "Type_NodeAdded",
+    "Type_NodeRemoved",
+    "Type_NodeProtocolInfo",
+    "Type_NodeNaming",
+    "Type_NodeEvent",
+    "Type_PollingDisabled",
+    "Type_PollingEnabled",
+    "Type_SceneEvent",
+    "Type_CreateButton",
+    "Type_DeleteButton",
+    "Type_ButtonOn",
+    "Type_ButtonOff",
+    "Type_DriverReady",
+    "Type_DriverFailed",
+    "Type_DriverReset",
+    "Type_EssentialNodeQueriesComplete",
+    "Type_NodeQueriesComplete",
+    "Type_AwakeNodesQueried",
+    "Type_AllNodesQueriedSomeDead",
+    "Type_AllNodesQueried",
+    "Type_Notification",
+    "Type_DriverRemoved",
+    "Type_ControllerCommand",
+    "Type_NodeReset"
+];
+
+events.forEach(function(ev) {
+    var name = ev[5].toLowerCase();
+    for (var i=6; i<ev.length; ++i) {
+        if (ev[i] == ev[i].toUpperCase()) {
+            name += ' ' + ev[i].toLowerCase();
+        } else {
+            name += ev[i];
+        }
+    }
+    instance.on(name, function() {
+        log('LOG GOT EVENT', name, arguments);
+    });
+    // console.log(ev, name);
 });
