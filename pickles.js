@@ -160,9 +160,18 @@ app.get('/', function(req, res) {
     res.send(loadHtml("/data/index.html"));
 });
 
-app.get('/log', function(req, res) { res.send(safe.fs.readFileSync("/var/log/pickles.log")); });
-app.get('/error', function(req, res) { res.send(safe.fs.readFileSync("/var/log/pickles.err")); });
-app.get('/notifications', function(req, res) { res.send(safe.fs.readFileSync(logFile)); });
+app.get('/log', function(req, res) {
+    res.type('application/text');
+    res.send(safe.fs.readFileSync("/var/log/pickles.log"));
+});
+app.get('/error', function(req, res) {
+    res.type('application/text');
+    res.send(safe.fs.readFileSync("/var/log/pickles.err"));
+});
+app.get('/notifications', function(req, res) {
+    res.type('application/text');
+    res.send(safe.fs.readFileSync(logFile));
+});
 
 app.get('/configure', function(req, res) {
     log(req);
