@@ -139,9 +139,12 @@ if (process.argv[2] != '--no-zwave') {
     });
 }
 
+var htmlHost;
 function loadHtml(file) {
     var data = safe.fs.readFileSync(__dirname + file, { encoding: 'utf-8' });
     assert(data);
+    if (htmlHost)
+        appData.host = htmlHost;
     for (var key in appData) {
         var k = '%';
         for (let i=0; i<key.length; ++i) {
@@ -153,35 +156,46 @@ function loadHtml(file) {
             value = value.join('\n');
         data = data.replace(new RegExp(k, 'g'), value);
     }
+    delete appData.htmlHost;
     return data;
 }
 
+var rebooting = false;
 app.get('/', function(req, res) {
-    res.send(loadHtml("/data/index.html"));
+    htmlHost = req.headers.host;
+    if (rebooting) {
+        res.send(loadHtml("/data/reboot.html"));
+        reboot();
+        setTimeout(function() { reboot(); }, 5000);
+    } else {
+        res.send(loadHtml("/data/index.html"));
+    }
 });
 
 app.get('/log', function(req, res) {
+    htmlHost = req.headers.host;
     res.type('text/plain');
     res.send(safe.fs.readFileSync("/var/log/pickles.log"));
 });
 app.get('/error', function(req, res) {
+    htmlHost = req.headers.host;
     res.type('text/plain');
     res.send(safe.fs.readFileSync("/var/log/pickles.err"));
 });
 app.get('/notifications', function(req, res) {
+    htmlHost = req.headers.host;
     res.type('text/plain');
     res.send(safe.fs.readFileSync(logFile));
 });
 
 app.get('/configure', function(req, res) {
-    log(req);
-    appData.host = req.headers.host;
+    htmlHost = req.headers.host;
     instance.disconnect();
     res.send(loadHtml("/data/redirect.html"));
-    delete appData.host;
 });
 
 app.post('/update', function(req, res) {
+    htmlHost = req.headers.host;
     for (let key in req.body) {
         appData[key] = req.body[key];
     }
@@ -199,11 +213,8 @@ app.post('/update', function(req, res) {
     safe.fs.writeFileSync("/etc/wpa_supplicant/wpa_supplicant.conf", newContents);
 
     safe.fs.writeFileSync(__dirname + "/data.json", JSON.stringify(appData, undefined, 4));
-    appData.host = req.headers.host;
-    res.send(loadHtml("/data/reboot.html"));
-    delete appData.host;
-    reboot();
-    setTimeout(function() { reboot(); }, 5000); });
+    rebooting = true;
+    res.redirect("/");
 
 app.listen(80, function () {
     console.log('Example app listening on port 80!');
