@@ -44,7 +44,7 @@ case "$1" in
         else
             echo "Starting $name"
             cd "$dir"
-            sudo -u pi "git pull"
+            sudo -u pi git pull
             if [ -z "$user" ]; then
                 sudo $cmd >> "$stdout_log" 2>> "$stderr_log" &
             else
