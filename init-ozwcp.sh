@@ -13,7 +13,7 @@ dir="/home/pi/dev/open-zwave/open-zwave-control-panel/"
 cmd="ozwcp -p 8080"
 user=""
 
-name="ozwcp"
+name="./ozwcp"
 pid_file="/var/run/$name.pid"
 stdout_log="/dev/null" # "/var/log/$name.log"
 stderr_log="/dev/null" # "/var/log/$name.err"
